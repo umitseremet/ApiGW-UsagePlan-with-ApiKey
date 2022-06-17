@@ -1,0 +1,9 @@
+StackName: 'rate-limit-poc'
+Parameters:
+- ParameterKey: 'ApiKeySourceType'
+  ParameterValue: 'HEADER'
+- ParameterKey: 'RestApiRandomGetIntegrationUri'
+  ParameterValue: 'https://ANY-WEB-URL.us-east-1.amazonaws.com/'
+Capabilities:
+  - CAPABILITY_AUTO_EXPAND
+  - CAPABILITY_IAM
