@@ -1,0 +1,11 @@
+StackName: 'rate-limit-poc-cw'
+Parameters:
+- ParameterKey: 'ApiKeySourceType'
+  ParameterValue: 'HEADER'
+- ParameterKey: 'EnvironmentName'
+  ParameterValue: 'poc'
+- ParameterKey: 'RestApiRandomGetIntegrationUri'
+  ParameterValue: 'https://onqfedc60e.execute-api.us-east-1.amazonaws.com/'
+Capabilities:
+  - CAPABILITY_AUTO_EXPAND
+  - CAPABILITY_IAM
