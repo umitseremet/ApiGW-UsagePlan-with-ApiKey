@@ -1,6 +1,6 @@
 # ApiGW-UsagePlan-with-ApiKey without Log & Monitoring
 ```
-API-GW rate limit for Usage Plans with API Key usage
+# API-GW rate limit for Usage Plans with API Key usage
 ```
 without Log & Monitoring with Log & Monitoring
 
