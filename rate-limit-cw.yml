@@ -1,0 +1,338 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "AWS API GW creation with Usage Plans"
+
+Parameters:
+    EnvironmentName:
+        Type: String
+    ApiKeySourceType:
+        Type: String
+    RestApiRandomGetIntegrationUri:
+        Type: String
+
+Resources:
+
+  ApiGatewayLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/apigateway/ApiGatewayLogGroupForCloudWatch
+      RetentionInDays: 7
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Description: !Sub '${AWS::StackName}-apigw'
+      Name: !Sub '${AWS::StackName}-apigw'
+      ApiKeySourceType: !Ref ApiKeySourceType
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+      EndpointConfiguration:
+        Types:
+        - REGIONAL
+
+
+  RestApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - RestApi
+    Properties:
+      RestApiId: !Ref RestApi
+      Description: Automatically created by the RestApi construct
+      StageName: dev-cw
+      StageDescription:
+        Tags:
+          - Key: env
+            Value: !Ref EnvironmentName
+        Description: Stage - DEV
+        LoggingLevel: INFO
+        MetricsEnabled: True
+        TracingEnabled: True
+        AccessLogSetting:
+          DestinationArn: !GetAtt ApiGatewayLogGroup.Arn
+          Format: '{ "requestId":"$context.requestId", "ip":"$context.identity.sourceIp", "caller":"$context.identity.caller", "user":"$context.identity.user", "requestTime":$context.requestTimeEpoch, "httpMethod":"$context.httpMethod", "resourcePath":"$context.resourcePath", "status":$context.status, "protocol":"$context.protocol", "responseLength":$context.responseLength }'
+    DependsOn:
+      - RestApiRandomGet
+
+
+  #RestApiDeploymentStageDev:
+  #  Type: AWS::ApiGateway::Stage
+  #  DependsOn:
+  #    - RestApi
+  #    - RestApiDeployment
+  #  Properties:
+  #    RestApiId: !Ref RestApi
+  #    DeploymentId: !Ref RestApiDeployment
+  #    StageName: dev-cw
+
+  RestApiRandom:
+    Type: AWS::ApiGateway::Resource
+    DependsOn:
+      - RestApi
+    Properties:
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: "random"
+      RestApiId: !Ref RestApi
+
+  RestApiRandomGet:
+    Type: AWS::ApiGateway::Method
+    DependsOn:
+      - RestApi
+    Properties:
+      HttpMethod: GET
+      ResourceId: !Ref RestApiRandom
+      RestApiId: !Ref RestApi
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: GET
+        Type: HTTP
+        Uri: !Ref RestApiRandomGetIntegrationUri
+        IntegrationResponses:
+          - StatusCode: 200
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels: { "application/json": "Empty" }
+
+  ApiKeyGoldenUser01cw:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      Name: ApiKeyGoldenUser01cw
+      Description: CloudFormation API Key for GoldenUser01
+      Enabled: true
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+      StageKeys:
+        - RestApiId: !Ref RestApi
+          StageName: dev-cw
+
+
+  UsagePlanKeyGoldenUser01cw:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      KeyId: !Ref ApiKeyGoldenUser01cw
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlanGolden
+
+  ApiKeyGoldenUser02cw:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      Name: ApiKeyGoldenUser02cw
+      Description: CloudFormation API Key for GoldenUser02
+      Enabled: true
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+      StageKeys:
+        - RestApiId: !Ref RestApi
+          StageName: dev-cw
+
+
+  UsagePlanKeyGoldenUser02cw:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      KeyId: !Ref ApiKeyGoldenUser02cw
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlanGolden
+
+  ApiKeySilverUser01cw:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      Name: ApiKeySilverUser01cw
+      Description: CloudFormation API Key for SilverUser01
+      Enabled: true
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+      StageKeys:
+        - RestApiId: !Ref RestApi
+          StageName: dev-cw
+
+
+  UsagePlanKeySilverUser01cw:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      KeyId: !Ref ApiKeySilverUser01cw
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlanSilver
+
+
+  ApiKeySilverUser02cw:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      Name: ApiKeySilverUser02cw
+      Description: CloudFormation API Key for SilverUser02
+      Enabled: true
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+      StageKeys:
+        - RestApiId: !Ref RestApi
+          StageName: dev-cw
+
+
+  UsagePlanKeySilverUser02cw:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      KeyId: !Ref ApiKeySilverUser02cw
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlanSilver
+
+  ApiKeyBronzeUser01cw:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      Name: ApiKeyBronzeUser01cw
+      Description: CloudFormation API Key for BronzeUser01
+      Enabled: true
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+      StageKeys:
+        - RestApiId: !Ref RestApi
+          StageName: dev-cw
+
+
+  UsagePlanKeyBronzeUser01cw:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      KeyId: !Ref ApiKeyBronzeUser01cw
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlanBronze
+
+  ApiKeyBronzeUser02cw:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      Name: ApiKeyBronzeUser02cw
+      Description: CloudFormation API Key for BronzeUser02
+      Enabled: true
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+      StageKeys:
+        - RestApiId: !Ref RestApi
+          StageName: dev-cw
+
+
+  UsagePlanKeyBronzeUser02cw:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      KeyId: !Ref ApiKeyBronzeUser02cw
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlanBronze
+
+  UsagePlanGolden:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      ApiStages:
+        - ApiId: !Ref RestApi
+          Stage: dev-cw
+      Description: Golden Class Customers
+      Quota:
+        Limit: 15
+        Period: MONTH
+      Throttle:
+        BurstLimit: 12
+        RateLimit: 10
+      UsagePlanName: GoldenClass
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+
+  UsagePlanSilver:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      ApiStages:
+        - ApiId: !Ref RestApi
+          Stage: dev-cw
+      Description: Silver Class Customers
+      Quota:
+        Limit: 10
+        Period: MONTH
+      Throttle:
+        BurstLimit: 8
+        RateLimit: 6
+      UsagePlanName: SilverClass
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+
+  UsagePlanBronze:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - RestApi
+      - RestApiDeployment
+    Properties:
+      ApiStages:
+        - ApiId: !Ref RestApi
+          Stage: dev-cw
+      Description: Bronze Class Customers
+      Quota:
+        Limit: 5
+        Period: MONTH
+      Throttle:
+        BurstLimit: 4
+        RateLimit: 13
+      UsagePlanName: BronzeClass
+      Tags:
+        - Key: env
+          Value: !Ref EnvironmentName
+
+
+Outputs:
+  Region:
+    Description: "Region"
+    Value: !Ref AWS::Region
+
+  ApiId:
+    Description: "API ID"
+    Value: !Ref RestApi
+
+  ApiUrl:
+    Description: "API endpoint URL for Prod environment"
+    Value: !Sub 'https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/dev-cw/'
