@@ -1,8 +1,7 @@
-# ApiGW-UsagePlan-with-ApiKey without Log & Monitoring
+# ApiGW-UsagePlan-with-ApiKey with Log & Monitoring
 ```
 # API-GW rate limit for Usage Plans with API Key usage
 ```
-without Log & Monitoring with Log & Monitoring
 
 
 # Creating Components without Log & Monitoring
