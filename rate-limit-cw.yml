@@ -109,6 +109,8 @@ Resources:
       Tags:
         - Key: env
           Value: !Ref EnvironmentName
+        - Key: tenant_id
+          Value: GoldenUser01
       StageKeys:
         - RestApiId: !Ref RestApi
           StageName: dev-cw
@@ -136,6 +138,8 @@ Resources:
       Tags:
         - Key: env
           Value: !Ref EnvironmentName
+        - Key: tenant_id
+          Value: GoldenUser02
       StageKeys:
         - RestApiId: !Ref RestApi
           StageName: dev-cw
@@ -163,6 +167,8 @@ Resources:
       Tags:
         - Key: env
           Value: !Ref EnvironmentName
+        - Key: tenant_id
+          Value: SilverUser01
       StageKeys:
         - RestApiId: !Ref RestApi
           StageName: dev-cw
@@ -191,6 +197,8 @@ Resources:
       Tags:
         - Key: env
           Value: !Ref EnvironmentName
+        - Key: tenant_id
+          Value: SilverUser02
       StageKeys:
         - RestApiId: !Ref RestApi
           StageName: dev-cw
@@ -218,6 +226,8 @@ Resources:
       Tags:
         - Key: env
           Value: !Ref EnvironmentName
+        - Key: tenant_id
+          Value: BronzeUser01
       StageKeys:
         - RestApiId: !Ref RestApi
           StageName: dev-cw
@@ -245,6 +255,8 @@ Resources:
       Tags:
         - Key: env
           Value: !Ref EnvironmentName
+        - Key: tenant_id
+          Value: BronzeUser02
       StageKeys:
         - RestApiId: !Ref RestApi
           StageName: dev-cw
