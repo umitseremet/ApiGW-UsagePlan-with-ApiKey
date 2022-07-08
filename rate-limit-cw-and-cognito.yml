@@ -117,22 +117,6 @@ Resources:
       Domain: !Ref CognitoDomain
       UserPoolId: !Ref CognitoUserPool
 
-  #CognitoUser01:
-    #Type: AWS::Cognito::UserPoolUser
-    #DependsOn:
-      #- CognitoUserPoolDomain
-      #- CognitoUserPool
-    #Properties:
-      #UserPoolId: !Ref CognitoUserPool
-      #DesiredDeliveryMediums:
-        #- EMAIL
-      #UserAttributes:
-        #- Name: email
-          #Value: umit.seremet@interfolio.com
-      #MessageAction: SUPPRESS
-      #Username: user01
-      #UserPoolId: !Ref CognitoUserPool
-
 
   ApiGatewayLogGroup:
     Type: AWS::Logs::LogGroup
