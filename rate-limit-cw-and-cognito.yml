@@ -4,7 +4,13 @@ Description: "AWS API GW creation with Usage Plans"
 #Manual Actions:
 # 1- Copy "App client secret" from Userpool>GeneralSettings>AppClient to Lambda>Code>CLIENT_SECRET (CF can not do this for now)
 # 2- Force API-GW to re-select the Lambda --> APIGW>Resource>Post>IntegrationRequest>LambdaFunction>SelectAnotherRandomThing>ReselectBackTheLmabda (CF can not do this as weirdly)
-# 3- Logo Upload Userpool>GeneralSettings>AppIntegration>UICustomization>Upload  (CF can not do this for now)
+# 3- Test Lambda with JSON below
+# {
+#  "username": "user01",
+#  "password": "Password1!"
+# }
+# 4- Logo Upload Userpool>GeneralSettings>AppIntegration>UICustomization>Upload  (CF can not do this for now)
+
 
 Parameters:
    # HostedZoneApiGw:
