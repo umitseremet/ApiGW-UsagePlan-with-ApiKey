@@ -1,0 +1,19 @@
+StackName: 'rate-limit-poc-cw'
+Parameters:
+- ParameterKey: 'ApiKeySourceType'
+  ParameterValue: 'HEADER'
+- ParameterKey: 'Runtime'
+  ParameterValue: 'python3.7'
+- ParameterKey: 'MemorySize'
+  ParameterValue: '128'
+- ParameterKey: 'Timeout'
+  ParameterValue: '10'
+- ParameterKey: 'EnvironmentName'
+  ParameterValue: 'poc'
+- ParameterKey: 'CognitoDomain'
+  ParameterValue: 'api-gw-domain'
+- ParameterKey: 'RestApiRandomGetIntegrationUri'
+  ParameterValue: 'https://onqfedc60e.execute-api.us-east-1.amazonaws.com/'
+Capabilities:
+  - CAPABILITY_AUTO_EXPAND
+  - CAPABILITY_IAM
