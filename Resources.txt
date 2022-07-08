@@ -1,0 +1,5 @@
+E2E-Solution:
+- https://betterprogramming.pub/secure-aws-api-gateway-with-amazon-cognito-and-aws-lambda-535e7c9ffea1
+
+Additional Parameters for Cognito:
+- https://www.ragate.co.jp/blog/articles/5024
