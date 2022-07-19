@@ -145,7 +145,7 @@ Resources:
         #- EMAIL
       #UserAttributes:
         #- Name: email
-          #Value: umit.seremet@interfolio.com
+          #Value: umit.seremet@xyz.com
       #MessageAction: SUPPRESS
       #Username: user01
       #UserPoolId: !Ref CognitoUserPool
