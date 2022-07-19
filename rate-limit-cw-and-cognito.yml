@@ -3,14 +3,16 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: "AWS API GW creation with Usage Plans"
 #Manual Actions:
 # 1- Copy "App client secret" from Userpool>GeneralSettings>AppClient to Lambda>Code>CLIENT_SECRET (CF can not do this for now)
-# 2- Force API-GW to re-select the Lambda --> APIGW>Resource>Post>IntegrationRequest>LambdaFunction>SelectAnotherRandomThing>ReselectBackTheLmabda (CF can not do this as weirdly)
-# 3- Test Lambda with JSON below
+# 2- Logo Upload Userpool>GeneralSettings>AppIntegration>UICustomization>Upload  (CF can not do this for now)
+# 3- User Creation over Cognito Userpool>GeneralSettings>UsersAndGroups>CreateUser
+# 4- Adding API-Key Target for Lambda Lambda>Configuration>AddTrigger>APIGW>Security:API-Key
+# 5- Force API-GW to re-select the Lambda --> APIGW>Resource>Post>IntegrationRequest>LambdaFunction>SelectAnotherRandomThing>ReselectBackTheLambda (CF can not do this as weirdly)
+# 6- OPTIONAL-Test Lambda with JSON below
 # {
 #  "username": "user01",
 #  "password": "Password1!"
 # }
-# 4- Logo Upload Userpool>GeneralSettings>AppIntegration>UICustomization>Upload  (CF can not do this for now)
-
+# 7- OPTIONAL- Deleting Added API-Key Lambda>Configuration>Triggers>DeleteTheAddedOne
 
 Parameters:
    # HostedZoneApiGw:
@@ -34,6 +36,15 @@ Parameters:
         AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
 
 Resources:
+  #ApiGwDNSRecord:
+    #Type: AWS::Route53::RecordSet
+    #Properties:
+      #HostedZoneId: !Ref HostedZoneApiGw
+      #Name: apigw.xyz.dev
+      #ResourceRecords:
+      #- !Sub ${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com/login?response_type=code&client_id=${CognitoUserPoolClient}&redirect_uri=${RestApiRandomGetIntegrationUri}
+      #TTL: 60
+      #Type: CNAME
 
   CognitoUserPool:
     Type: AWS::Cognito::UserPool
@@ -48,7 +59,7 @@ Resources:
       AdminCreateUserConfig:
         AllowAdminCreateUserOnly: true
         InviteMessageTemplate:
-          EmailMessage: !Sub 'Your username is {username} and temporary password is {####}. You need to login and change this temp password to activate your account in https://apigw.test.dev'
+          EmailMessage: !Sub 'Your username is {username} and temporary password is {####}. You need to login and change this temp password to activate your account in https://apigw.intf.dev for ${EnvironmentName}'
           EmailSubject: 'Your temporary password'
       Policies:
         PasswordPolicy:
@@ -122,6 +133,22 @@ Resources:
     Properties:
       Domain: !Ref CognitoDomain
       UserPoolId: !Ref CognitoUserPool
+
+  #CognitoUser01:
+    #Type: AWS::Cognito::UserPoolUser
+    #DependsOn:
+      #- CognitoUserPoolDomain
+      #- CognitoUserPool
+    #Properties:
+      #UserPoolId: !Ref CognitoUserPool
+      #DesiredDeliveryMediums:
+        #- EMAIL
+      #UserAttributes:
+        #- Name: email
+          #Value: umit.seremet@interfolio.com
+      #MessageAction: SUPPRESS
+      #Username: user01
+      #UserPoolId: !Ref CognitoUserPool
 
 
   ApiGatewayLogGroup:
@@ -631,6 +658,9 @@ Outputs:
 
   CognitoUserPoolClientIdSecret:
     Value: !GetAtt CognitoUserPoolClient.ClientSecret
+
+  LambdaFuntionArn:
+    Value: !GetAtt LambdaFunction.Arn
 
   HostedPasswordResetURL:
     Value: !Sub https://${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com/login?response_type=code&client_id=${CognitoUserPoolClient}&redirect_uri=${RestApiRandomGetIntegrationUri}
