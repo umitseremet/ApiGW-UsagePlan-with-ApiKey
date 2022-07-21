@@ -40,7 +40,7 @@ Resources:
     #Type: AWS::Route53::RecordSet
     #Properties:
       #HostedZoneId: !Ref HostedZoneApiGw
-      #Name: apigw.xyz.dev
+      #Name: apigw.intf.dev
       #ResourceRecords:
       #- !Sub ${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com/login?response_type=code&client_id=${CognitoUserPoolClient}&redirect_uri=${RestApiRandomGetIntegrationUri}
       #TTL: 60
@@ -59,7 +59,7 @@ Resources:
       AdminCreateUserConfig:
         AllowAdminCreateUserOnly: true
         InviteMessageTemplate:
-          EmailMessage: !Sub 'Your username is {username} and temporary password is {####}. You need to login and change this temp password to activate your account in https://apigw.intf.dev for ${EnvironmentName}'
+          EmailMessage: !Sub 'Your username is {username} and temporary password is {####}. You need to login and change this temp password to activate your account in https://apigw.intf.dev for ${EnvironmentName}.'
           EmailSubject: 'Your temporary password'
       Policies:
         PasswordPolicy:
@@ -108,7 +108,13 @@ Resources:
       UserPoolId: !Ref CognitoUserPool
       ClientName: RateLimitClientApp
       GenerateSecret: true
-      RefreshTokenValidity: 10
+      TokenValidityUnits:
+        AccessToken: minutes
+        IdToken: minutes
+        RefreshToken: minutes
+      AccessTokenValidity: 60
+      IdTokenValidity: 60
+      RefreshTokenValidity: 60
       AllowedOAuthFlowsUserPoolClient: true
       CallbackURLs:
         - !Ref RestApiRandomGetIntegrationUri
@@ -665,3 +671,5 @@ Outputs:
   HostedPasswordResetURL:
     Value: !Sub https://${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com/login?response_type=code&client_id=${CognitoUserPoolClient}&redirect_uri=${RestApiRandomGetIntegrationUri}
     Description: Password of each NewUser needs to be reset in here for activation
+    Export:
+      Name: PasswordURL
